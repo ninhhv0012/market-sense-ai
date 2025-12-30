@@ -1,159 +1,102 @@
-🚀 MarketSense AI - Intelligent Market Research Agent (POC)
+# 🚀 MarketSense AI - Intelligent Market Research Agent (POC)
 
-Portfolio Project: A Proof of Concept (POC) demonstrating Full-stack Architecture, Asynchronous System Design, and LLM Integration.
+**Portfolio Project:** A Proof of Concept (POC) demonstrating Full-stack Architecture, Asynchronous System Design, and LLM Integration.
 
-MarketSense AI is an end-to-end intelligent system designed to automate the extraction and analysis of market intelligence from web resources. It leverages a Hybrid Architecture combining a robust Django monolith for orchestration and a high-performance FastAPI microservice for AI inference.
+MarketSense AI is an end-to-end intelligent system designed to automate the extraction and analysis of market intelligence from web resources. It leverages a Hybrid Architecture combining a robust Django monolith for orchestration and a high-performance FastAPI microservice for AI inference.[web:7]
 
-📖 Table of Contents
+## 📖 Table of Contents
 
-Project Context & Objective
+- [Project Context & Objective](#project-context--objective)
+- [System Architecture](#system-architecture)
+- [Technical Highlights (Architecture Decisions)](#technical-highlights-architecture-decisions)
+- [Tech Stack](#tech-stack)
+- [Key Features](#key-features)
+- [Getting Started](#getting-started)
+- [Project Structure](#project-structure)
+- [Future Improvements](#future-improvements)
 
-System Architecture
-
-Technical Highlights (Architecture Decisions)
-
-Tech Stack
-
-Key Features
-
-Getting Started
-
-Project Structure
-
-Future Improvements
-
-🎯 Project Context & Objective
+## 🎯 Project Context & Objective
 
 This project was built to showcase a production-ready approach to modern AI web applications. The primary goals of this POC are:
 
-Decoupling Concerns: Separating business logic (Django) from compute-intensive AI tasks (FastAPI).
+- **Decoupling Concerns:** Separating business logic (Django) from compute-intensive AI tasks (FastAPI).
+- **Resilience:** Implementing robust asynchronous processing for long-running tasks (Web Scraping + LLM Inference).
+- **Type Safety:** Ensuring data integrity from Database to Frontend using GraphQL and TypeScript.
 
-Resilience: Implementing robust asynchronous processing for long-running tasks (Web Scraping + LLM Inference).
+## 💡 Technical Highlights (Architecture Decisions)
 
-Type Safety: Ensuring data integrity from Database to Frontend using GraphQL and TypeScript.
+**Why this architecture?** A breakdown of the engineering choices made during development.
 
-💡 Technical Highlights (Architecture Decisions)
+1. **Hybrid Monolith + Microservice Pattern**
+   - **Orchestrator (Django):** Handles auth, data modeling, and standard CRUD. Django was chosen for its mature ecosystem and rapid development speed.
+   - **Intelligence (FastAPI):** Handles AI inference. Python's asyncio in FastAPI is superior for I/O-bound operations (calling OpenAI APIs) compared to synchronous Django, allowing independent scaling of the AI worker nodes.
 
-Why this architecture? A breakdown of the engineering choices made during development.
+2. **Event-Driven & Async (Celery + Redis)**
+   - Analyzing a long market report can take 10-30 seconds, which would timeout a standard HTTP request.
+   - **Solution:** The system uses a strictly asynchronous flow. The API responds instantly with a **PENDING** status (via GraphQL). The Frontend polls for completion. This ensures a responsive UI regardless of backend processing time.
 
-1. Hybrid Monolith + Microservice Pattern
+3. **Structured Outputs & Hallucination Control**
+   - **Technique:** To prevent the LLM from returning unstructured chatter, the AI Service uses Pydantic to enforce strict output schemas.
+   - **Result:** The frontend is guaranteed to receive valid JSON for the SWOT analysis and Sentiment data, or the system will automatically retry/fail gracefully.
 
-Instead of a complex full-microservices mesh or a monolithic bottleneck, I adopted a pragmatic hybrid approach.
+## 🏗️ System Architecture
 
-Orchestrator (Django): Handles auth, data modeling, and standard CRUD. Django was chosen for its mature ecosystem and rapid development speed.
+### High-Level Design
 
-Intelligence (FastAPI): Handles AI inference. Python's asyncio in FastAPI is superior for I/O-bound operations (calling OpenAI APIs) compared to synchronous Django, allowing independent scaling of the AI worker nodes.
+**Design Methodology: ICONIX Process**
+- **Domain Modeling:** Core entities (AnalysisRequest, SWOT, Sentiment).
+- **Use Case Analysis:** "Analyze URL" flow with robustness analysis (handling timeouts, scraping failures).
+- **Sequence Design:** Mapping asynchronous interactions between User, Django, Celery, and FastAPI.
+## 🛠️ Tech Stack
 
-2. Event-Driven & Async (Celery + Redis)
+### Backend Core (Orchestrator)
+- **Python & Django:** Core application logic and ORM.
+- **Graphene-Django:** GraphQL API for flexible data querying.
+- **Celery:** Distributed task queue.
+- **Redis:** Message broker and result backend.
+- **PostgreSQL:** Relational DB with JSONB support.
 
-Analyzing a long market report can take 10-30 seconds, which would timeout a standard HTTP request.
+### AI Microservice (Intelligence)
+- **FastAPI:** Async framework for AI endpoints.
+- **OpenAI API:** LLM for semantic analysis.
+- **Pydantic:** Data validation and schema enforcement.
 
-Solution: The system uses a strictly asynchronous flow. The API responds instantly with a PENDING status (via GraphQL). The Frontend polls for completion. This ensures a responsive UI regardless of backend processing time.
+### Frontend (Client)
+- **React (Vite):** Frontend build tool.
+- **TypeScript:** Type safety.
+- **Apollo Client:** State management and GraphQL integration.
 
-3. Structured Outputs & Hallucination Control
+## ✨ Key Features
 
-Technique: To prevent the LLM from returning unstructured chatter, the AI Service uses Pydantic to enforce strict output schemas.
+- 🕷️ **Automated Web Scraping:** Extracts clean text from technical articles/reports.
+- 🧠 **Structured AI Analysis:** Generates strict JSON outputs (SWOT, Sentiment).
+- ⚡ **Non-blocking UI:** Asynchronous processing with polling mechanisms.
+- 📊 **GraphQL API:** Efficient data fetching.
+- 🛡️ **Robust Error Handling:** Retries for scraping and AI timeouts.
 
-Result: The frontend is guaranteed to receive valid JSON for the SWOT analysis and Sentiment data, or the system will automatically retry/fail gracefully.
-
-🏗️ System Architecture
-
-High-Level Design
-
-graph TD
-    User((User)) -->|Browser| FE[React Frontend]
-    FE -->|GraphQL Mutation| GW[Django Core / API Gateway]
-    
-    subgraph "Backend Core (Django)"
-        GW -->|Persist| DB[(PostgreSQL)]
-        GW -->|Dispatch Task| Q[Redis Message Broker]
-    end
-    
-    subgraph "Async Workers"
-        W[Celery Worker] -->|Consume| Q
-        W -->|Scrape| Web[Target Website]
-        W -->|Update| DB
-    end
-    
-    subgraph "AI Microservice (FastAPI)"
-        W -->|HTTP Request| AI[AI Service]
-        AI -->|LLM Inference| GPT[OpenAI API]
-    end
-    
-    FE -.->|GraphQL Polling| GW
-
-
-Design Methodology: ICONIX Process
-
-Domain Modeling: Core entities (AnalysisRequest, SWOT, Sentiment).
-
-Use Case Analysis: "Analyze URL" flow with robustness analysis (handling timeouts, scraping failures).
-
-Sequence Design: Mapping asynchronous interactions between User, Django, Celery, and FastAPI.
-
-🛠️ Tech Stack
-
-Backend Core (Orchestrator)
-
-Python & Django: Core application logic and ORM.
-
-Graphene-Django: GraphQL API for flexible data querying.
-
-Celery: Distributed task queue.
-
-Redis: Message broker and result backend.
-
-PostgreSQL: Relational DB with JSONB support.
-
-AI Microservice (Intelligence)
-
-FastAPI: Async framework for AI endpoints.
-
-OpenAI API: LLM for semantic analysis.
-
-Pydantic: Data validation and schema enforcement.
-
-Frontend (Client)
-
-React (Vite): Frontend build tool.
-
-TypeScript: Type safety.
-
-Apollo Client: State management and GraphQL integration.
-
-✨ Key Features
-
-🕷️ Automated Web Scraping: Extracts clean text from technical articles/reports.
-
-🧠 Structured AI Analysis: Generates strict JSON outputs (SWOT, Sentiment).
-
-⚡ Non-blocking UI: Asynchronous processing with polling mechanisms.
-
-📊 GraphQL API: Efficient data fetching.
-
-🛡️ Robust Error Handling: Retries for scraping and AI timeouts.
-
-🚀 Getting Started
+## 🚀 Getting Started
 
 This project is containerized for easy setup.
 
-Prerequisites
+### Prerequisites
+- Docker & Docker Compose installed.
+- An OpenAI API Key.
 
-Docker & Docker Compose installed.
 
-An OpenAI API Key.
+# Installation
 
-Installation
+## 1. Clone the repository
 
-Clone the repository
-
-git clone [https://github.com/your-username/market-sense-ai.git](https://github.com/your-username/market-sense-ai.git)
+```bash
+git clone https://github.com/your-username/market-sense-ai.git
 cd market-sense-ai
+```
 
+## 2. Configure Environment Variables
 
-Configure Environment Variables
-Create a .env file in the root directory:
+Create a `.env` file in the root directory:
 
+```bash
 # Database
 POSTGRES_DB=marketsense_db
 POSTGRES_USER=postgres
@@ -167,36 +110,39 @@ REDIS_URL=redis://broker:6379/0
 # AI Service
 OPENAI_API_KEY=sk-your-openai-api-key-here
 AI_SERVICE_URL=http://ai_service:8000
+```
 
+## 3. Build and Run
 
-Build and Run
-
+```bash
 docker-compose up --build
+```
 
+## 4. Run Migrations
 
-Run Migrations
 Open a new terminal tab:
 
+```bash
 docker-compose exec backend_core python manage.py migrate
+```
 
+## 5. Start Frontend (Run locally for better DevX)
 
-Start Frontend (Run locally for better DevX)
-
+```bash
 cd frontend
 npm install
 npm run dev
+```
 
+# Access Points
 
-Access Points
+- **Frontend UI:** `http://localhost:5173`
+- **GraphQL Playground:** `http://localhost:8000/graphql`
+- **FastAPI Swagger Docs:** `http://localhost:8001/docs`
 
-Frontend UI: http://localhost:5173
+# 📂 Project Structure
 
-GraphQL Playground: http://localhost:8000/graphql
-
-FastAPI Swagger Docs: http://localhost:8001/docs
-
-📂 Project Structure
-
+```
 market-sense-ai/
 ├── backend_core/            # Django Monolith (Orchestrator)
 │   ├── analysis/            # Business logic (Models, Tasks, Scraper)
@@ -208,26 +154,20 @@ market-sense-ai/
 ├── frontend/                # React + TypeScript Client
 ├── docker-compose.yml       # Service Orchestration
 └── README.md
+```
 
-
-🔮 Future Improvements
+# 🔮 Future Improvements
 
 Since this is a POC, several production-grade features are planned:
 
-[ ] Real-time Updates: Migrate from polling to WebSockets (Django Channels).
+- [ ]  **Real-time Updates:** Migrate from polling to WebSockets (Django Channels).
+- [ ]  **RAG Implementation:** Add a vector database (Pinecone/Milvus) for Chat-with-PDF functionality.
+- [ ]  **Cloud Deployment:** Deploy to AWS ECS (Fargate) with CI/CD pipelines.
 
-[ ] RAG Implementation: Add a vector database (Pinecone/Milvus) for Chat-with-PDF functionality.
+# 👤 Author
 
-[ ] Cloud Deployment: Deploy to AWS ECS (Fargate) with CI/CD pipelines.
+**[Your Name]**
 
-👤 Author
-
-[Your Name]
-
-Portfolio: [Link to your portfolio]
-
-LinkedIn: [Link to your LinkedIn]
-
-Email: [Your Email]
-
-Thank you for reviewing my code!
+- **Portfolio:** [Link to your portfolio]
+- **LinkedIn:** [Link to your LinkedIn]
+- **Email:** [Your Email]
