@@ -10,11 +10,6 @@ MarketSense AI is an end-to-end intelligent system designed to automate the extr
 <video src="https://github.com/user-attachments/assets/2a6121af-fd81-4f78-94ca-f3fb585516f1"  width="800"></video>
 </p>
 
-
-
-
-
-
 ### Screenshots
 
 <p align="center">
@@ -194,8 +189,7 @@ Since this is a POC, several production-grade features are planned:
 
 ## 👤 Author
 
-**[Your Name]**
+**Van-Ninh Ha**
 
-- **Portfolio:** [Link to your portfolio]
-- **LinkedIn:** [Link to your LinkedIn]
-- **Email:** [Your Email]
+- **LinkedIn:** https://www.linkedin.com/in/ninhha0012/
+- **Email:** ninhhv.work@gmail.com
