@@ -7,8 +7,12 @@ MarketSense AI is an end-to-end intelligent system designed to automate the extr
 ## 🎬 Demo
 
 <p align="center">
-<video src="/assets/Demo.mp4" controls width="800"></video>
+<video src="https://github.com/user-attachments/assets/2a6121af-fd81-4f78-94ca-f3fb585516f1"  width="800"></video>
 </p>
+
+
+
+
 
 
 ### Screenshots
