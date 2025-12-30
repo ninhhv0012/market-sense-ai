@@ -2,18 +2,42 @@
 
 **Portfolio Project:** A Proof of Concept (POC) demonstrating Full-stack Architecture, Asynchronous System Design, and LLM Integration.
 
-MarketSense AI is an end-to-end intelligent system designed to automate the extraction and analysis of market intelligence from web resources. It leverages a Hybrid Architecture combining a robust Django monolith for orchestration and a high-performance FastAPI microservice for AI inference.[web:7]
+MarketSense AI is an end-to-end intelligent system designed to automate the extraction and analysis of market intelligence from web resources. It leverages a Hybrid Architecture combining a robust Django monolith for orchestration and a high-performance FastAPI microservice for AI inference.
+
+## 🎬 Demo
+
+<p align="center">
+<video src="/assets/Demo.mp4" controls width="800"></video>
+</p>
+
+
+### Screenshots
+
+<p align="center">
+  <img src="assets/image1.png" alt="MarketSense AI Interface" width="800"/>
+</p>
+
+<p align="center">
+  <img src="assets/image2.png" alt="Analysis Dashboard" width="800"/>
+</p>
+
+<p align="center">
+  <img src="assets/image3.png" alt="SWOT Analysis Results" width="800"/>
+</p>
 
 ## 📖 Table of Contents
 
-- [Project Context & Objective](#project-context--objective)
-- [System Architecture](#system-architecture)
-- [Technical Highlights (Architecture Decisions)](#technical-highlights-architecture-decisions)
-- [Tech Stack](#tech-stack)
-- [Key Features](#key-features)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Future Improvements](#future-improvements)
+- [Project Context & Objective](#-project-context--objective)
+- [System Architecture](#️-system-architecture)
+- [Technical Highlights (Architecture Decisions)](#-technical-highlights-architecture-decisions)
+- [Tech Stack](#️-tech-stack)
+- [Key Features](#-key-features)
+- [Getting Started](#-getting-started)
+- [Installation](#installation)
+- [Access Points](#access-points)
+- [Project Structure](#-project-structure)
+- [Future Improvements](#-future-improvements)
+- [Author](#-author)
 
 ## 🎯 Project Context & Objective
 
@@ -83,16 +107,16 @@ This project is containerized for easy setup.
 - An OpenAI API Key.
 
 
-# Installation
+## Installation
 
-## 1. Clone the repository
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/market-sense-ai.git
+git clone https://github.com/ninhhv0012/market-sense-ai.git
 cd market-sense-ai
 ```
 
-## 2. Configure Environment Variables
+### 2. Configure Environment Variables
 
 Create a `.env` file in the root directory:
 
@@ -112,13 +136,13 @@ OPENAI_API_KEY=sk-your-openai-api-key-here
 AI_SERVICE_URL=http://ai_service:8000
 ```
 
-## 3. Build and Run
+### 3. Build and Run
 
 ```bash
 docker-compose up --build
 ```
 
-## 4. Run Migrations
+### 4. Run Migrations
 
 Open a new terminal tab:
 
@@ -126,7 +150,7 @@ Open a new terminal tab:
 docker-compose exec backend_core python manage.py migrate
 ```
 
-## 5. Start Frontend (Run locally for better DevX)
+### 5. Start Frontend (Run locally for better DevX)
 
 ```bash
 cd frontend
@@ -134,13 +158,13 @@ npm install
 npm run dev
 ```
 
-# Access Points
+## Access Points
 
 - **Frontend UI:** `http://localhost:5173`
 - **GraphQL Playground:** `http://localhost:8000/graphql`
 - **FastAPI Swagger Docs:** `http://localhost:8001/docs`
 
-# 📂 Project Structure
+## 📂 Project Structure
 
 ```
 market-sense-ai/
@@ -156,7 +180,7 @@ market-sense-ai/
 └── README.md
 ```
 
-# 🔮 Future Improvements
+## 🔮 Future Improvements
 
 Since this is a POC, several production-grade features are planned:
 
@@ -164,7 +188,7 @@ Since this is a POC, several production-grade features are planned:
 - [ ]  **RAG Implementation:** Add a vector database (Pinecone/Milvus) for Chat-with-PDF functionality.
 - [ ]  **Cloud Deployment:** Deploy to AWS ECS (Fargate) with CI/CD pipelines.
 
-# 👤 Author
+## 👤 Author
 
 **[Your Name]**
 

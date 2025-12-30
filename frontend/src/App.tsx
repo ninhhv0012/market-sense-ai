@@ -58,7 +58,7 @@ function App() {
   return (
     <div>
       <h1>🚀 MarketSense AI</h1>
-      <p>Nhập URL bài báo công nghệ (Tiếng Anh) để phân tích SWOT</p>
+      <p>Enter a Tech News URL to analyze its market impact.</p>
 
       {/* Input Form */}
       <form onSubmit={handleSubmit}>
