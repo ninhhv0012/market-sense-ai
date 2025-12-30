@@ -1,0 +1,9 @@
+Django>=4.2
+graphene-django>=3.1  # GraphQL
+psycopg2-binary>=2.9  # Postgres adapter
+celery>=5.3           # Async Task
+redis>=5.0            # Broker connector
+requests>=2.31
+django-cors-headers>=4.3
+beautifulsoup4>=4.12
+requests>=2.31

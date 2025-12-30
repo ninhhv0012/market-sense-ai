@@ -1,0 +1,15 @@
+:root { font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; line-height: 1.5; font-weight: 400; }
+body { margin: 0; display: flex; place-items: center; min-width: 320px; min-height: 100vh; background-color: #f3f4f6; color: #1f2937; }
+#root { max-width: 1280px; margin: 0 auto; padding: 2rem; text-align: center; width: 100%; }
+.card { background: white; padding: 2em; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); text-align: left; margin-top: 20px; }
+input { padding: 10px; border-radius: 4px; border: 1px solid #ccc; width: 60%; margin-right: 10px; }
+button { padding: 10px 20px; border-radius: 4px; border: none; background-color: #2563eb; color: white; cursor: pointer; font-weight: bold; }
+button:disabled { background-color: #93c5fd; cursor: not-allowed; }
+.status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; }
+.status-PENDING { background: #fef08a; color: #854d0e; }
+.status-PROCESSING { background: #bfdbfe; color: #1e40af; }
+.status-COMPLETED { background: #bbf7d0; color: #166534; }
+.status-FAILED { background: #fecaca; color: #991b1b; }
+.swot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+.swot-box { padding: 15px; border-radius: 6px; border: 1px solid #e5e7eb; }
+.swot-box h4 { margin-top: 0; text-transform: uppercase; font-size: 0.9em; color: #6b7280; }

@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # 1. Database Service
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - market_net
+    healthcheck: # Đảm bảo DB sống mới cho các service khác chạy
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis Message Broker
+  broker:
+    image: redis:7-alpine
+    networks:
+      - market_net
+
+  # 3. Backend Core (Django Monolith)
+  backend_core:
+    build: ./backend_core
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend_core:/app # Mount volume để sửa code không cần rebuild (Hot reload)
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=db
+      - REDIS_URL=${REDIS_URL}
+      - AI_SERVICE_URL=http://ai_service:8000
+    depends_on:
+      db:
+        condition: service_healthy
+      broker:
+        condition: service_started
+    networks:
+      - market_net
+
+  # 4. Celery Worker (Chạy nền các tác vụ nặng)
+  worker:
+    build: ./backend_core
+    command: celery -A core worker -l info # 'core' là tên project Django
+    volumes:
+      - ./backend_core:/app
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_HOST=db
+      - REDIS_URL=${REDIS_URL}
+      - AI_SERVICE_URL=http://ai_service:8000
+    depends_on:
+      - backend_core
+      - broker
+    networks:
+      - market_net
+
+  # 5. AI Microservice (FastAPI)
+  ai_service:
+    build: ./ai_service
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./ai_service:/app
+    ports:
+      - "8001:8000" # Map port 8001 máy host -> 8000 container
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    networks:
+      - market_net
+
+# Define Network
+networks:
+  market_net:
+    driver: bridge
+
+# Define Volumes
+volumes:
+  postgres_data:
